@@ -1,0 +1,85 @@
+
+<p-dropdown 
+  class="gender-filter"
+  [options]="genderOptions" 
+  [(ngModel)]="selectedGender" 
+  placeholder="Filter by Gender"
+  (onChange)="applyFilters()">
+</p-dropdown>
+
+<p-dropdown
+  class="education-filter"
+  [options]="educationOptions" 
+  [(ngModel)]="selectedEducation" 
+  placeholder="Filter by Education"
+  (onChange)="applyFilters()">
+</p-dropdown>
+
+<button 
+  class="download-button" 
+  pButton 
+  label="Download as Excel" 
+  icon="pi pi-file-excel" 
+  (click)="exportToExcel()">
+</button>
+
+<p-table 
+    [value]="filteredStudents" 
+    [scrollable]="true" 
+    [rows]="rowsPerPage" 
+    [totalRecords]="totalRecords">
+  
+  <ng-template pTemplate="header">
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Gender</th>
+        <th>Address</th>
+        <th>Education</th>
+        <th>Marksheet</th>
+        <th>Actions</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-student>
+    <tr>
+        <td>{{ student.firstName }}</td>
+        <td>{{ student.lastName }}</td>
+        <td>{{ student.gender }}</td>
+        <td>{{ student.address }}</td>
+        <td>
+          <table style="width: 100%; border-collapse: collapse;">
+              <!-- Header Row -->
+              <tr style="font-weight: bold; background-color: #f2f2f2;">
+                  <td style="padding: 5px;">Education</td>
+                  <td style="padding: 5px;">Institute</td>
+                  <td style="padding: 5px;">Percentage</td>
+                  <td style="padding: 5px;">Passing Year</td>
+              </tr>
+              <!-- Data Rows -->
+              <tr *ngFor="let edu of student.education">
+                  <td style="font-weight: bold; padding-right: 10px;">{{ edu.educationLevel }}</td>
+                  <td>{{ edu.institution }}</td>
+                  <td>{{ edu.percentage }}%</td>
+                  <td>({{ edu.passingYear }})</td>
+              </tr>
+          </table>
+      </td>  
+
+        <td>
+            <ul>
+                <li *ngFor="let mark of student.education">
+                  <span *ngIf="mark.marksheets">
+                      {{ mark.marksheets.split('/').pop() }}
+                  </span>
+                </li>
+            </ul>
+        </td>
+        <td>
+            <button pButton icon="pi pi-pencil" (click)="editStudent(student)" class="p-button-sm edit-button">Edit</button>
+            <button pButton icon="pi pi-trash" (click)="confirmDelete(student)" class="p-button-sm delete-button">Delete</button>
+        </td>
+    </tr>
+  </ng-template>
+
+</p-table>

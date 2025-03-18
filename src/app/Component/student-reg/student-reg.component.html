@@ -1,0 +1,145 @@
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<form [formGroup]="educationForm" (ngSubmit)="onSubmit()">
+  <h1>Student Information</h1>
+
+  <p>
+    <label for="firstName">First Name: </label>
+    <input type="text" id="firstName" formControlName="firstName">
+    <span *ngIf="educationForm.get('firstName')?.invalid && educationForm.get('firstName')?.touched">
+      First Name is required
+    </span>
+
+    <label for="lastName">Last Name: </label>
+    <input type="text" id="lastName" formControlName="lastName">
+    <span *ngIf="educationForm.get('lastName')?.invalid && educationForm.get('lastName')?.touched">
+      Last Name is required
+    </span>
+  </p>
+
+  <p class="gender">
+    <label>Gender: </label>
+    <input type="radio" formControlName="gender" value="Male"> Male
+    <input type="radio" formControlName="gender" value="Female"> Female
+    <span *ngIf="educationForm.get('gender')?.invalid && educationForm.get('gender')?.touched">
+      Please select gender
+    </span>
+  </p>
+
+  <p>
+    <label for="address">Address:</label>
+    <textarea id="address" formControlName="address"></textarea>
+    <span *ngIf="educationForm.get('address')?.invalid && educationForm.get('address')?.touched">
+      Address is required
+    </span>
+  </p>
+
+  <p>Education Details:</p>
+  <div formArrayName="education">
+    <div *ngFor="let edu of education.controls; let i = index">
+      <div [formGroupName]="i">
+        <strong>{{ educationLevels[i] }} Details</strong>
+        <br>
+
+        <label *ngIf="educationLevels[i] === '10th' || educationLevels[i] === '12th'">School:</label>
+        <label *ngIf="educationLevels[i] === 'UG' || educationLevels[i] === 'PG'">University:</label>
+
+        <input type="text" formControlName="institution">
+        <span *ngIf="edu.get('institution')?.invalid && edu.get('institution')?.touched">
+          Institution is required
+        </span>
+
+        Percentage:
+        <input type="text" formControlName="percentage">
+        <span *ngIf="edu.get('percentage')?.invalid && edu.get('percentage')?.touched">
+          Percentage is required
+        </span>
+
+        Passing Year:
+        <input type="text" formControlName="passingYear">
+        <span *ngIf="edu.get('passingYear')?.invalid && edu.get('passingYear')?.touched">
+          Passing Year is required
+        </span>
+
+        <button *ngIf="i !== 0" type="button" (click)="removeEducation(i)">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    <button type="button" (click)="addEducation()">Add Education</button>
+  </p>
+
+  <h3>Upload Marksheet</h3>
+  <div formArrayName="marksheets">
+    <div *ngFor="let mark of marksheets.controls; let i = index">
+      <div [formGroupName]="i">
+        <strong>{{ marksheetLevels[i] }} Marksheet</strong>
+        <br>
+        <input type="file" (change)="onFileChange($event, i)">
+      
+        <button *ngIf="i !== 0" type="button" (click)="removeMarksheet(i)">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    <button type="button" (click)="addMarksheet()">Add Marksheet</button>
+  </p>
+
+  <p>
+    <button type="button" (click)="previewDetails()">Submit</button>
+  </p>
+</form>
+
+<div *ngIf="showPreview" class="modal-overlay"></div>
+
+<div *ngIf="showPreview" class="modal">
+  <button class="modal-close" (click)="editDraft()">✖</button>
+
+  <h2>Preview Your Details</h2>
+  <p><strong>First Name:</strong> {{ draftData.firstName }}</p>
+  <p><strong>Last Name:</strong> {{ draftData.lastName }}</p>
+  <p><strong>Gender:</strong> {{ draftData.gender }}</p>
+  <p><strong>Address:</strong> {{ draftData.address }}</p>
+
+  <h3>Education Details:</h3>
+  <div *ngFor="let edu of draftData.education; let i = index">
+    <h4>{{ educationLevels[i] }} Details</h4> 
+    <p><strong>Institution:</strong> {{ edu.institution }}</p>
+    <p><strong>Percentage:</strong> {{ edu.percentage }}</p>
+    <p><strong>Passing Year:</strong> {{ edu.passingYear }}</p>
+  </div>
+
+
+<h3 class="marksheet-title">Marksheet Uploads:</h3>
+
+<div *ngFor="let mark of draftData.marksheets; let i = index" class="marksheet-container">
+  <h4 class="marksheet-header">{{ marksheetLevels[i] }} Marksheet</h4>
+
+  <img *ngIf="mark.preview" [src]="mark.preview" alt="Marksheet Image" width="250"
+       class="marksheet-image" (click)="openImageModal(mark.preview)">
+
+  
+  </div>
+
+  <button class="edit-btn" (click)="editDraft()">Edit</button>
+  <button class="submit-btn" (click)="onSubmit()">Final Submit</button>
+</div>
+
+<div *ngIf="selectedImage" class="fullscreen-modal" (click)="closeImageModal()">
+  <div class="fullscreen-modal-content" (click)="$event.stopPropagation()">
+    <img [src]="selectedImage" class="fullscreen-image"
+         [ngStyle]="{'transform': 'scale(' + zoomLevel + ') rotate(' + rotation + 'deg)'}"
+         (wheel)="zoomImage($event)">
+
+    <div class="image-controls">
+      <button class="zoom-in-btn" (click)="zoomIn()"><i class="fas fa-search-plus"></i></button>
+      <button class="zoom-out-btn" (click)="zoomOut()"><i class="fas fa-search-minus"></i></button>
+      <button class="rotate-left-btn" (click)="rotateLeft()"><i class="fas fa-undo"></i></button>
+      <button class="rotate-right-btn" (click)="rotateRight()"><i class="fas fa-redo"></i></button>
+      <button class="modal-close-btn" (click)="closeImageModal()">✖</button>
+
+    </div>
+  </div>
+</div>

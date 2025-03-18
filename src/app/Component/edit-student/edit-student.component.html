@@ -1,0 +1,94 @@
+
+   <form [formGroup]="educationForm" (ngSubmit)="onSubmit()">
+    <h1>Student Information</h1>
+  
+    <p>
+      <label for="firstName">First Name: </label>
+      <input type="text" id="firstName" formControlName="firstName">
+      <span *ngIf="educationForm.get('firstName')?.invalid && educationForm.get('firstName')?.touched">
+        First Name is required
+      </span>
+  
+      <label for="lastName">Last Name: </label>
+      <input type="text" id="lastName" formControlName="lastName">
+      <span *ngIf="educationForm.get('lastName')?.invalid && educationForm.get('lastName')?.touched">
+        Last Name is required
+      </span>
+    </p>
+  
+    <p>
+      <label>Gender: </label>
+      <input type="radio" formControlName="gender" value="Male"> Male
+      <input type="radio" formControlName="gender" value="Female"> Female
+      <span *ngIf="educationForm.get('gender')?.invalid && educationForm.get('gender')?.touched">
+        Please select gender
+      </span>
+    </p>
+  
+    <p>
+      <label for="address">Address:</label>
+      <textarea id="address" formControlName="address"></textarea>
+      <span *ngIf="educationForm.get('address')?.invalid && educationForm.get('address')?.touched">
+        Address is required
+      </span>
+    </p>
+  
+    <p>Education Details:</p>
+    <div formArrayName="education">
+      <div *ngFor="let edu of education.controls; let i = index">
+        <div [formGroupName]="i">
+          <strong>{{ educationLevels[i] }} Details</strong>
+          <br>
+  
+          <label *ngIf="educationLevels[i] === '10th' || educationLevels[i] === '12th'">School:</label>
+          <label *ngIf="educationLevels[i] === 'UG' || educationLevels[i] === 'PG'">University:</label>
+  
+          <input type="text" formControlName="institution">
+          <span *ngIf="edu.get('institution')?.invalid && edu.get('institution')?.touched">
+            Institution is required
+          </span>
+  
+          Percentage:
+          <input type="text" formControlName="percentage">
+          <span *ngIf="edu.get('percentage')?.invalid && edu.get('percentage')?.touched">
+            Percentage is required
+          </span>
+  
+          Passing Year:
+          <input type="text" formControlName="passingYear">
+          <span *ngIf="edu.get('passingYear')?.invalid && edu.get('passingYear')?.touched">
+            Passing Year is required
+          </span>
+  
+          <button *ngIf="i !== 0" type="button" (click)="removeEducation(i)">Remove</button>
+        </div>
+      </div>
+    </div>
+  
+    <p>
+      <button type="button" (click)="addEducation()">Add Education</button>
+    </p>
+  
+    <h3>Upload Marksheet</h3>
+    <div formArrayName="marksheets">
+      <div *ngFor="let mark of marksheets.controls; let i = index">
+        <div [formGroupName]="i">
+          <strong>{{ marksheetLevels[i] }} Marksheet</strong>
+          <br>
+          <input type="file" (change)="onFileChange($event, i)">
+        
+          <button *ngIf="i !== 0" type="button" (click)="removeMarksheet(i)">Remove</button>
+        </div>
+      </div>
+    </div>
+  
+    <p>
+      <button type="button" (click)="addMarksheet()">Add Marksheet</button>
+    </p>
+    <button type="submit" class="btn btn-success" [disabled]="educationForm.invalid">Save</button>
+
+    
+  </form>
+  
+  
+  
